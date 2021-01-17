@@ -21,6 +21,10 @@ __parse_script_arguments() {
 }
 
 ################&&!%@@%!&&################ AUTO GENERATED CODE BELOW THIS LINE ################&&!%@@%!&&################
+# date of generation: 201219
+# generation cmd on the following line:
+# python "${GWSPY}/write-btw.py" "-t" "bash" "-w" "${GWSA}/init/init.bash" "-r" "${GWSSH}/_helper-funcs.bash" "-x" "__echo" "__check_if_obj_exists" "__append_line_to_file_if_not_found"
+
 __echo(){
     #### echo that only occurs based on variables defined from the surrounding scope
     local out=''
@@ -41,13 +45,13 @@ __echo(){
                 set -- 'dummy' $(for ((i=1;i<${#1};i++)); do echo "-${1:$i:1}"; done) "${@:2}" # implicit shift
                 ;;
             *)
-                [ "${obj_set}" == 'false' ] && obj_set='true' || ! __echo -se "ERROR: too many objs for __echo" || return 2
-                out="${out}"
+                [ "${obj_set}" == 'false' ] && obj_set='true' || ! echo "ERROR: too many objs for __echo" || return 2
+                out="${1}"
                 ;;
         esac
         shift
     done
-    [ "${send_out}" != 'false' ] || { [ "${stderr}" == 'true' ] && >&2 printf "${out}" || printf "${out}"; }
+    [ "${send_out}" == 'false' ] || { [ "${stderr}" == 'true' ] && >&2 printf "${out}" || printf "${out}"; }
 }
 
 __check_if_obj_exists() {
@@ -88,7 +92,7 @@ __check_if_obj_exists() {
     case "${type}" in
         file|f) cmd='touch'; flag='f';;
         dir|d) cmd='mkdir'; flag='d';;
-        *) __echo -se "ERROR: arg ${1} for type is unexpected" && return 5;;
+        *) __echo -se "ERROR: arg type '${1}' unexpected" && return 5;;
     esac
 
     if [ "${create}" == 'true' ] && [ ! -"${flag}" "${obj}" ]; then

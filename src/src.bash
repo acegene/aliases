@@ -35,7 +35,7 @@ _src(){
     local open=''; case "${os}" in linux|wsl) open='xdg-open' ;; windows) open='start' ;; *) echo "ERROR: unable to set open var" && return 1;; esac
     local __git='git'; command -v git-number > /dev/null 2>&1 && __git='git-number' || ! echo 'WARNING: git-number cmd not found'
     #### funcs
-    _cd_parent_aliases() { local ALS='.'; local DIR=''; for VAR in {1.."${1}"} ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
+    _cd_parent_aliases() { local ALS='.'; local DIR=''; for VAR in $(seq 1 "${1}") ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
     #### aliases
     ## git
     [ "${__git}" == 'git-number' ] && alias gn="${__git}" && alias gg='git -c color.status=always status -sb | head -n 1 && git-number -s' || alias gg='git status -sb'
@@ -49,8 +49,7 @@ _src(){
     alias gcp='git cherry-pick'
     alias gcm='git checkout master'
     alias grom='git fetch && git rebase origin/master'
-    alias gl="git log --date=format:'%d-%m-%Y %H:%M' --pretty=format:'%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s'"
-    alias lg='gl'
+    alias lg="git log --date=format:'%d-%m-%Y %H:%M' --pretty=format:'%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s'"
     alias log="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n          %C(white)%s%C(reset)%n          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'"
     alias ggg='git submodule foreach git status -sb'
     alias gsu='git submodule update'
@@ -73,7 +72,7 @@ _src(){
         echo 'WARNING: completion for git aliases failed'
     fi
     ## dirs
-    _cd_parent_aliases 10
+    _cd_parent_aliases '10'
     alias dl="cd ${HOME}/Downloads"
     alias dsk="cd ${HOME}/Desktop"
     alias doc="cd ${HOME}/Documents"

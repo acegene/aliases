@@ -4,7 +4,17 @@
 
 $ErrorActionPreference = "Stop"
 
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "EXEC: cd '$PWD'; & '$PSCommandPath' $args # as admin powershell"
+    Start-Process PowerShell -Verb RunAs "-NoExit -NoProfile -ExecutionPolicy Bypass -Command `"cd '$PWD'; & '$PSCommandPath' $args`""
+    exit
+}
+
 ################&&!%@@%!&&################ AUTO GENERATED CODE BELOW THIS LINE ################&&!%@@%!&&################
+# date of generation: 201219
+# generation cmd on the following line:
+# python "${GWSPY}/write-btw.py" "-t" "ps1" "-w" "${GWSA}/init/init.ps1" "-r" "${GWSPS}/_helper-funcs.ps1" "-x" "Group-Unspecified-Args"
+
 function Group-Unspecified-Args {
     [CmdletBinding()]
     param(
@@ -20,8 +30,7 @@ function Group-Unspecified-Args {
             # Parameter names start with '-'
             if ($CurrentParamName) {
                 # Have a param name w/o a value; assume it's a switch
-                # If a value had been found, $CurrentParamName would have
-                # been nulled out again
+                # If a value had been found, $CurrentParamName would have been nulled out again
                 $ParamHashTable.$CurrentParamName = $true
             }
 
@@ -61,13 +70,13 @@ function _init {
     $dir_this = $PSScriptRoot # not compatible with PS version < 3.0
     $dir_repo = "$(pushd $(git -C $($dir_this) rev-parse --show-toplevel); echo $PWD; popd)"
     $dir_bin = "$($dir_repo)\bin"
-    $src_path = "$($dir_repo)\src\src.ps1"
+    $path_src = "$($dir_repo)\src\src.ps1"
     $path_prof = "$($HOME)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
     #### lines to append
     $cmd_args = "$($named_args.Keys | % { "-$($_)" + " '$($named_args.Item($_))'" }) "
     $cmd_args += "$($unnamed_args | % { "'$($_)'" })"
     if ($cmd_args -eq " ''"){$cmd_args = ""}
-    $prof_cmd = ". '$($src_path)' $($cmd_args)"
+    $prof_cmd = ". '$($path_src)' $($cmd_args)"
     #### check if lines exist in file, otherwise append them
     if ($(((Get-Content -Raw $path_prof) -split '\n')[-1]) -ne ''){
         $prof_cmd = "`r`n$($prof_cmd)"

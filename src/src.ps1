@@ -49,13 +49,12 @@ function _src {
     function global:gcm {git checkout master}
     function global:grom {git fetch && git rebase origin/master}
     function global:lg {git log --date=format:'%y-%m-%d %H:%M' --pretty=format:'%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s'}
-    function global:lg {global:gl}
     function global:log {git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n          %C(white)%s%C(reset)%n          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'}
     function global:ggg {git submodule foreach git status -sb}
     function global:gsu {git submodule update}
     function global:gss {git submodule status}
     ## dirs
-    _cd_parent_aliases 10
+    _cd_parent_aliases '10'
     function global:dl {cd "$($HOME)/Downloads"}
     function global:dsk {cd "$($HOME)/Desktop"}
     function global:doc {cd "$($HOME)/Documents"}

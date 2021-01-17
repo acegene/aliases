@@ -15,17 +15,16 @@ function _src {
     $dir_this = $PSScriptRoot # not compatible with PS version < 3.0
     $dir_repo = "$(pushd $(git -C $($dir_this) rev-parse --show-toplevel); echo $PWD; popd)"
     $dir_bin = "$($dir_repo)\bin"
-    $path_prof = "$($HOME)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
     #### exports
     $global:GWSA = $dir_repo
     $env:PATH += ";$($dir_bin)"
-    #### cfg
-    $editor = 'code'
-    $bash = 'C:\Program Files\Git\bin\bash.exe'
-    $git_number = "$($dir_bin)\git-number"; $perl = 'C:\Program Files\Git\usr\bin\perl5.32.0.exe'
+    #### includes
+    . "$($dir_this)\cfg.ps1"
+    #### git-number check if can be enabled
+    $git_number = "$($dir_bin)\git-number"
     $use_git_number = $false; if ($(Test-Path $git_number) -And $(Test-Path $perl)){$use_git_number = $true}
     if ($use_git_number){$gitcmd = $perl; $gitargs = @("'$($dir_bin)\git-number'")}
-    else{echo "Warning: git-number or perl not found, defaulting to git"; $gitcmd = 'git'; $gitargs = @("-c","color.status=always")}
+    else{echo "Warning: git-number and/or perl not found, defaulting to git"; $gitcmd = 'git'; $gitargs = @("-c","color.status=always")}
     #### funcs
     Invoke-Expression "function global:_git_or_gn {& '$($gitcmd)' $($gitargs -join ' ') @args}"
     function _cd_parent_aliases {
@@ -63,12 +62,12 @@ function _src {
     function global:gwsv {cd $global:GWSA; gg}
     ## misc
     Set-Alias -Scope 'global' -Name 'op' -Value 'start'
-    Invoke-Expression "function global:rc {& '$editor' '$path_prof'}"
+    Invoke-Expression "function global:rc {& '$editor' '$profile_path'}"
     Invoke-Expression "function global:rcg {& '$editor' '$path_this'}"
-    Invoke-Expression "function global:rcs {. '$path_prof'}"
+    Invoke-Expression "function global:rcs {. '$profile_path'}"
     Invoke-Expression "function global:rcgs {. '$path_this'}"
     Set-Alias -Scope 'global' -Name 'rs' -Value 'clear'
-    Invoke-Expression "function global:rc {& '$editor' '$path_prof'}"
+    Invoke-Expression "function global:rc {& '$editor' '$profile_path'}"
     Invoke-Expression "function global:bashed {if(`$args.count -eq 0){& '$bash' -i}else{`$x = `$args | % {`$_ -replace '`"', '\`"'}; & '$bash' -ic `"`$x`"}}"
 }
 

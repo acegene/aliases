@@ -30,10 +30,11 @@ _src(){
     #### exports
     export GWSA="${dir_repo}"
     export PATH="${PATH}:${dir_bin}"
-    #### cfg
-    local editor='code'
+    #### cfg auto
     local open=''; case "${os}" in linux|wsl) open='xdg-open' ;; windows) open='start' ;; *) echo "ERROR: unable to set open var" && return 1;; esac
     local __git='git'; command -v git-number > /dev/null 2>&1 && __git='git-number' || ! echo 'WARNING: git-number cmd not found'
+    #### includes
+    . "${dir_this}/cfg.sh"
     #### funcs
     _cd_parent_aliases() { local ALS='.'; local DIR=''; for VAR in $(seq 1 "${1}") ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
     #### aliases

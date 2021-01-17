@@ -13,7 +13,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 ################&&!%@@%!&&################ AUTO GENERATED CODE BELOW THIS LINE ################&&!%@@%!&&################
 # date of generation: 201219
 # generation cmd on the following line:
-# python "${GWSPY}/write-btw.py" "-t" "ps1" "-w" "${GWSA}/init/init.ps1" "-r" "${GWSPS}/_helper-funcs.ps1" "-x" "Group-Unspecified-Args"
+# python "${GWSPY}/write-btw.py" "-t" "ps1" "-w" "${GWSA}/init/init.ps1" "-x" "Group-Unspecified-Args"
 
 function Group-Unspecified-Args {
     [CmdletBinding()]
@@ -63,27 +63,28 @@ function _init {
     )
     #### collect cmd args
     $named_args,$unnamed_args = Group-Unspecified-Args @unspecified_args
-    #### if no profile exists create one
-    if (!(Test-Path $profile)){New-Item -Type File -Force $profile}
     #### hardcoded values
     $path_this = $PSCommandPath # not compatible with PS version < 3.0
     $dir_this = $PSScriptRoot # not compatible with PS version < 3.0
     $dir_repo = "$(pushd $(git -C $($dir_this) rev-parse --show-toplevel); echo $PWD; popd)"
     $dir_bin = "$($dir_repo)\bin"
     $path_src = "$($dir_repo)\src\src.ps1"
-    $path_prof = "$($HOME)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
+    #### includes
+    . "$($dir_repo)\src\cfg.ps1"
+    #### if no profile exists create one
+    if (!(Test-Path $profile_path)){New-Item -Type File -Force $profile_path}
     #### lines to append
     $cmd_args = "$($named_args.Keys | % { "-$($_)" + " '$($named_args.Item($_))'" }) "
     $cmd_args += "$($unnamed_args | % { "'$($_)'" })"
     if ($cmd_args -eq " ''"){$cmd_args = ""}
     $prof_cmd = ". '$($path_src)' $($cmd_args)"
     #### check if lines exist in file, otherwise append them
-    if ($(((Get-Content -Raw $path_prof) -split '\n')[-1]) -ne ''){
+    if ($(((Get-Content -Raw $profile_path) -split '\n')[-1]) -ne ''){
         $prof_cmd = "`r`n$($prof_cmd)"
     }
-    $file_str = Get-Content $path_prof | Select-String -SimpleMatch $prof_cmd
+    $file_str = Get-Content $profile_path | Select-String -SimpleMatch $prof_cmd
     if ($file_str -eq $null){
-        echo $prof_cmd >> $path_prof
+        echo $prof_cmd >> $profile_path
     }
 }
 

@@ -23,18 +23,19 @@ _src(){
     #### fill script vars with cmd line args and/or default values where applicable
     __parse_script_arguments "${@}" || return "1${?}"
     #### hardcoded values
-    local script_path="${BASH_SOURCE[0]}"
-    local dir_script="$(cd "$(dirname "${script_path}")"; pwd -P)" && [ "${dir_script}" != '' ] || ! __echo -se "ERROR: dir_script=''" || return 1
-    local dir_repo="$(cd "${dir_script}" && cd $(git rev-parse --show-toplevel) && echo ${PWD})" && [ "${dir_repo}" != '' ] || ! __echo -se "ERROR: dir_repo=''" || return 1
+    local path_this="${BASH_SOURCE[0]}"
+    local dir_this="$(cd "$(dirname "${path_this}")"; pwd -P)" && [ "${dir_this}" != '' ] || ! __echo -se "ERROR: dir_this=''" || return 1
+    local dir_repo="$(cd "${dir_this}" && cd $(git rev-parse --show-toplevel) && echo ${PWD})" && [ "${dir_repo}" != '' ] || ! __echo -se "ERROR: dir_repo=''" || return 1
+    local dir_bin="${dir_repo}/bin"
     #### exports
-    export PATH="${PATH}:${dir_repo}/bin"
     export GWSA="${dir_repo}"
+    export PATH="${PATH}:${dir_bin}"
     #### cfg
     local editor='code'
     local open=''; case "${os}" in linux|wsl) open='xdg-open' ;; windows) open='start' ;; *) echo "ERROR: unable to set open var" && return 1;; esac
     local __git='git'; command -v git-number > /dev/null 2>&1 && __git='git-number' || ! echo 'WARNING: git-number cmd not found'
     #### funcs
-    cd_parent_aliases() { local ALS='.'; local DIR=''; for VAR in {1..10} ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
+    _cd_parent_aliases() { local ALS='.'; local DIR=''; for VAR in {1.."${1}"} ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
     #### aliases
     ## git
     [ "${__git}" == 'git-number' ] && alias gn="${__git}" && alias gg='git -c color.status=always status -sb | head -n 1 && git-number -s' || alias gg='git status -sb'
@@ -72,21 +73,21 @@ _src(){
         echo 'WARNING: completion for git aliases failed'
     fi
     ## dirs
-    cd_parent_aliases
+    _cd_parent_aliases 10
     alias dl="cd ${HOME}/Downloads"
     alias dsk="cd ${HOME}/Desktop"
     alias doc="cd ${HOME}/Documents"
+    alias gwsa="cd ${GWSA} && gg"
     ## misc
     alias op="${open}"
     alias rc="${editor} ${HOME}/.bashrc"
     alias rca="${editor} ${HOME}/.bash_aliases"
-    alias rcg="${editor} ${script_path}"
+    alias rcg="${editor} ${path_this}"
     alias rcs="source ${HOME}/.bashrc"
     alias rcas="source ${HOME}/.bash_aliases"
-    alias rcgs="source ${script_path}"
+    alias rcgs="source ${path_this}"
     [ "${os}" == 'windows' ] || alias sudo='sudo ' # purpose is to allow 'sudo <alias>'
     [ "${os}" == 'windows' ] && alias rs='clear' || rs="clear printf '\e[3j'"
-    alias gwsa="cd ${GWSA} && git status -sb"
 }
 
 _src "${@}" || exit "${?}"

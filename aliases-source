@@ -1,0 +1,49 @@
+######### This file is sources via the aliases-init script
+test_opts(){ echo '--cache_test_results=no --test_output=all --test_env=DISPLAY'; }
+is_git_dirty() { if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then return 1; else return 0; fi }
+alias gitdirty='is_git_dirty; if [ $? -eq 1 ]; then echo 1; else echo 0; fi' #TODO determine usage needs
+cd_prnt_aliases() { local ALS=.; local DIR; for VAR in {1..10} ; do ALS=${ALS}.; DIR=${DIR}../; alias ${ALS}='cd '"${DIR}"; done }
+######### git  #########
+alias gg='git status -sb'
+alias gga='git status'
+alias gc='git checkout'
+alias gcp='git checkout -'
+alias gcm='git checkout master'
+alias gp='git pull'
+alias gcp='git cherry-pick'
+alias gd='git diff --cached HEAD^'
+alias gpm='git fetch && git checkout master && git pull'
+alias grm='git fetch && git rebase origin/master'
+alias ggg='git submodule foreach git status -sb'
+alias gsu='git submodule update'
+alias gss='git submodule status'
+alias lg='git log --date=format:"%d-%m-%Y %H:%M" --pretty=format:"%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s"'
+alias log='git log --graph --abbrev-commit --decorate --format=format:"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)"'
+######### ide  #########
+alias vs='code .'
+######### misc #########
+alias rc='gedit ~/gene-ws/aliases/aliases-source' # TODO undo hardcode
+alias rcs='source ~/gene-ws/aliases/aliases-source'
+alias sudo='sudo '
+alias ch='chmod 755'
+alias rs='reset'
+alias cl='clear'
+alias exp='nautilus . > /dev/null 2>&1'
+alias op='xdg-open'
+######### dirs #########
+alias dl='cd ~/Downloads'
+alias dsk='cd ~/Desktop'
+alias ~='cd ~'
+cd_prnt_aliases
+#### Completion Aid # TODO make this less of a relative path. Return error if doesnt exist
+git-completion-source(){
+	local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+	local git_completion_dir=$(find "$(dirname "$DIR")"/third-party/ -name git-completion[.^]bash)
+	if [ -f "$git_completion_dir" ]; then
+	  . "$git_completion_dir"
+	  __git_complete gp _git_pull
+	  __git_complete gc _git_checkout
+	  __git_complete gcp _git_cherry_pick
+	fi
+}
+git-completion-source ; unset -f git-completion-source # Runs then removes func from parent scope

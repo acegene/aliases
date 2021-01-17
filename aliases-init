@@ -1,0 +1,16 @@
+#!/bin/bash
+#### Adds line to source custom alias generation file
+__aliases-init-func () {
+	local SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+	local ALIASES_SRC=aliases-source
+	local LINE='[ -f '"${SCRIPTPATH}"'/'"${ALIASES_SRC}"' ] && . '"${SCRIPTPATH}"/"${ALIASES_SRC}"
+	local FILE=~/.bash_aliases
+	#### add line to FILE if needed to source ALIASES_SRC
+	if [ ! -f "${FILE}" ]; then
+		echo "${FILE}" does not exist, creating... ; touch "${FILE}"
+	fi
+	grep -qF -- "${LINE}" "${FILE}" || (echo -e "\n${LINE}" >> "${FILE}" && echo "${ALIASES_SRC}" added to "${FILE}") || return 1
+}
+####
+__aliases-init-func
+exit "${?}"

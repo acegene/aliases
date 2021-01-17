@@ -21,6 +21,7 @@ function _src {
     $env:PATH += ";$($dir_bin)"
     #### cfg
     $editor = 'code'
+    $bash = 'C:\Program Files\Git\bin\bash.exe'
     $git_number = "$($dir_bin)\git-number"; $perl = 'C:\Program Files\Git\usr\bin\perl5.32.0.exe'
     $use_git_number = $false; if ($(Test-Path $git_number) -And $(Test-Path $perl)){$use_git_number = $true}
     if ($use_git_number){$gitcmd = $perl; $gitargs = @("'$($dir_bin)\git-number'")}
@@ -67,6 +68,8 @@ function _src {
     Invoke-Expression "function global:rcs {. '$path_prof'}"
     Invoke-Expression "function global:rcgs {. '$path_this'}"
     Set-Alias -Scope 'global' -Name 'rs' -Value 'clear'
+    Invoke-Expression "function global:rc {& '$editor' '$path_prof'}"
+    Invoke-Expression "function global:bashed {if(`$args.count -eq 0){& '$bash' -i}else{`$x = `$args | % {`$_ -replace '`"', '\`"'}; & '$bash' -ic `"`$x`"}}"
 }
 
 _src @args

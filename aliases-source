@@ -1,19 +1,15 @@
 #!/bin/bash
 ######### This file is sourced via the aliases-init script
-test_opts(){ echo '--cache_test_results=no --test_output=all --test_env=DISPLAY'; }
-is_git_dirty() { if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then return 1; else return 0; fi }
-alias gitdirty='is_git_dirty; if [ $? -eq 1 ]; then echo 1; else echo 0; fi' #TODO determine usage needs
-cd_parent_aliases() { local ALS=.; local DIR; for VAR in {1..10} ; do ALS=${ALS}.; DIR=${DIR}../; alias ${ALS}='cd '"${DIR}"; done }
+is_git_dirty() { if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then return 1; else return 0; fi } # unused
+alias gitdirty='is_git_dirty; if [ $? -eq 1 ]; then echo 1; else echo 0; fi' # unused
+cd_parent_aliases() { local ALS='.'; local DIR; for VAR in {1..10} ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
 ######### git  #########
 alias gg='git status -sb'
-alias gga='git status'
 alias gc='git checkout'
-alias gcp='git checkout -'
 alias gcm='git checkout master'
 alias gp='git pull'
 alias gcp='git cherry-pick'
-alias gd='git diff --cached HEAD^'
-alias gpm='git fetch && git checkout master && git pull'
+alias gcmp='git checkout master && git pull'
 alias grm='git fetch && git rebase origin/master'
 alias ggg='git submodule foreach git status -sb'
 alias gsu='git submodule update'
@@ -23,14 +19,16 @@ alias log='git log --graph --abbrev-commit --decorate --format=format:"%C(bold b
 ######### ide  #########
 alias vs='code .'
 ######### misc #########
-alias rc='gedit ~/gene-ws/aliases/aliases-source' # TODO undo hardcode
-alias rcs='source ~/gene-ws/aliases/aliases-source'
-alias sudo='sudo '
+alias op='xdg-open'
+alias rc='xdg-open ~/.bashrc'
+alias rca='xdg-open ~/.bash_aliases'
+alias rcg='xdg-open ~/gene-ws/aliases/aliases-source' # TODO: undo relative path to ws
+alias rcs='source ~/.bashrc'
+alias rcas='source ~/.bash_aliases'
+alias rcgs='source ~/gene-ws/aliases/aliases-source'
+alias sudo='sudo ' # purpose is to allow 'sudo <alias>'
 alias ch='chmod 755'
 alias rs='reset'
-alias cl='clear'
-alias exp='nautilus . > /dev/null 2>&1'
-alias op='xdg-open'
 ######### dirs #########
 alias dl='cd ~/Downloads'
 alias dsk='cd ~/Desktop'
@@ -49,4 +47,5 @@ git-completion-source(){
 	  __git_complete git _git
 	fi
 }
-#git-completion-source ; unset -f git-completion-source # Runs then removes func from parent scope
+
+#git-completion-source # TODO: investigate git completion problems

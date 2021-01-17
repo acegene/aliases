@@ -1,0 +1,6 @@
+[submodule "third-party/git"]
+	path = third-party/git
+	url = https://github.com/git/git.git
+[submodule "third-party/git-number"]
+	path = third-party/git-number
+	url = git@github.com:holygeek/git-number.git

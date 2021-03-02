@@ -6,6 +6,7 @@
 #        perl path not generalized
 #        git tab completion
 #        rm invoke cmds
+#        check ps version
 
 $ErrorActionPreference = "Stop"
 
@@ -39,11 +40,11 @@ function _src {
     function global:gn {& _git_or_gn @args}
     Invoke-Expression "function global:gg {if (`$$use_git_number) { git -c color.status=always status -sb | select -first 1 && & global:_git_or_gn -s} else {git status -sb}}"
     function global:ga {& _git_or_gn 'add' @args}
-    function global:gc {& _git_or_gn 'checkout' @args}
+    function global:ggc {& _git_or_gn 'checkout' @args} # windows stomps on gc
     function global:gr {& _git_or_gn 'reset' @args}
     function global:gd {& _git_or_gn 'diff' @args}
     function global:gf {git fetch}
-    function global:gp {git pull}
+    function global:ggp {git pull} # windows stomps on gp
     function global:grb {git rebase}
     function global:gcp {git cherry-pick}
     function global:gcm {git checkout master}

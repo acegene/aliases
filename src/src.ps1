@@ -38,7 +38,7 @@ function _src {
     #### aliases
     ## git
     function global:gn {& _git_or_gn @args}
-    Invoke-Expression "function global:gg {if (`$$use_git_number) { git -c color.status=always status -sb | select -first 1 && & global:_git_or_gn -s} else {git status -sb}}"
+    Invoke-Expression "function global:gg {if (`$$use_git_number) { git -c color.status=always status -sb | select -first 1; if(`$?){& global:_git_or_gn -s}} else {git status -sb}}"
     function global:ga {& _git_or_gn 'add' @args}
     function global:ggc {& _git_or_gn 'checkout' @args} # windows stomps on gc
     function global:gr {& _git_or_gn 'reset' @args}
@@ -48,7 +48,7 @@ function _src {
     function global:grb {git rebase}
     function global:gcp {git cherry-pick}
     function global:gcm {git checkout master}
-    function global:grom {git fetch && git rebase origin/master}
+    function global:grom {git fetch; if($?){git rebase origin/master}}
     function global:lg {git log --date=format:'%y-%m-%d %H:%M' --pretty=format:'%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s'}
     function global:log {git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n          %C(white)%s%C(reset)%n          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'}
     function global:ggg {git submodule foreach git status -sb}

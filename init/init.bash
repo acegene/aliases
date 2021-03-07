@@ -10,7 +10,7 @@ __parse_script_arguments() {
             --operating-system|--os|-o)
                 case "${2}" in
                     linux|windows|wsl) os="${2}"; shift ;;
-                    *) echo "ERROR: unrecognized ${1} parameter ${2}" && return 1 ;;
+                    *) echo "ERROR: unrecognized '${1}' parameter '${2}', available options are windows, linux, or wsl" && return 1 ;;
                 esac
                 ;;
             *) echo "ERROR: arg ${1} is unexpected" && return 2 ;;

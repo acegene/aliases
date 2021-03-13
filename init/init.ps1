@@ -72,27 +72,27 @@ function _init {
     #### includes
     . "$($dir_repo)\src\cfg.ps1"
     #### if no profile exists create one
-    if (!(Test-Path $profile_path)){New-Item -Type File -Force $profile_path}
-    if (!(Test-Path $profile_path_2)){New-Item -Type File -Force $profile_path_2}
+    if (!(Test-Path $path_ps_profile)){New-Item -Type File -Force $path_ps_profile}
+    if (!(Test-Path $path_ps_profile_2)){New-Item -Type File -Force $path_ps_profile_2}
     #### lines to append
     $cmd_args = "$($named_args.Keys | % { "-$($_)" + " '$($named_args.Item($_))'" }) "
     $cmd_args += "$($unnamed_args | % { "'$($_)'" })"
     if ($cmd_args -eq " ''"){$cmd_args = ""}
     $prof_cmd = ". '$($path_src)' $($cmd_args)"
     #### check if lines exist in file, otherwise append them
-    if ($(((Get-Content -Raw $profile_path) -split '\n')[-1]) -ne ''){
+    if ($(((Get-Content -Raw $path_ps_profile) -split '\n')[-1]) -ne ''){
         $prof_cmd = "`r`n$($prof_cmd)"
     }
-    $file_str = Get-Content $profile_path | Select-String -SimpleMatch $prof_cmd
+    $file_str = Get-Content $path_ps_profile | Select-String -SimpleMatch $prof_cmd
     if ($file_str -eq $null){
-        echo $prof_cmd >> $profile_path
+        echo $prof_cmd >> $path_ps_profile
     }
-    if ($(((Get-Content -Raw $profile_path_2) -split '\n')[-1]) -ne ''){
+    if ($(((Get-Content -Raw $path_ps_profile_2) -split '\n')[-1]) -ne ''){
         $prof_cmd = "`r`n$($prof_cmd)"
     }
-    $file_str = Get-Content $profile_path_2 | Select-String -SimpleMatch $prof_cmd
+    $file_str = Get-Content $path_ps_profile_2 | Select-String -SimpleMatch $prof_cmd
     if ($file_str -eq $null){
-        echo $prof_cmd >> $profile_path_2
+        echo $prof_cmd >> $path_ps_profile_2
     }
 }
 

@@ -2,7 +2,7 @@
 #
 # descr: this file is sourced via this repo's init.bash
 
-__parse_script_arguments() {
+__parse_args(){
     while (( "${#}" )); do
         case "${1}" in
             --operating-system|--os|-o)
@@ -20,12 +20,12 @@ __parse_script_arguments() {
 _src(){
     #### default vars
     local os=''
-    #### fill script vars with cmd line args and/or default values where applicable
-    __parse_script_arguments "${@}" || return "1${?}"
+    #### parse cmd args and overwrite vars
+    __parse_args "${@}" || return "1${?}"
     #### hardcoded values
-    local path_this="${BASH_SOURCE[0]}"
-    local dir_this="$(cd "$(dirname "${path_this}")"; pwd -P)" && [ "${dir_this}" != '' ] || ! __echo -se "ERROR: dir_this=''" || return 1
-    local dir_repo="$(cd "${dir_this}" && cd $(git rev-parse --show-toplevel) && echo ${PWD})" && [ "${dir_repo}" != '' ] || ! __echo -se "ERROR: dir_repo=''" || return 1
+    local PATH_THIS="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -P)/$(basename -- "${BASH_SOURCE[0]}")"
+    local DIR_THIS="$(dirname -- "${PATH_THIS}")"
+    local dir_repo="$(cd -- "${DIR_THIS}" && cd -- "$(git rev-parse --show-toplevel)" && echo "${PWD}")" && [ "${dir_repo}" != '' ] || ! __echo -se "ERROR: dir_repo=''" || return 1
     local dir_bin="${dir_repo}/bin"
     #### exports
     export GWSA="${dir_repo}"
@@ -34,7 +34,7 @@ _src(){
     local open=''; case "${os}" in linux|wsl) open='xdg-open' ;; windows) open='start' ;; *) echo "ERROR: unable to set open var" && return 1;; esac
     local __git='git'; command -v git-number > /dev/null 2>&1 && __git='git-number' || ! echo 'WARNING: git-number cmd not found'
     #### includes
-    . "${dir_this}/cfg.sh"
+    . "${DIR_THIS}/cfg.bash"
     #### funcs
     _cd_parent_aliases() { local ALS='.'; local DIR=''; for VAR in $(seq 1 "${1}") ; do ALS="${ALS}."; DIR="${DIR}../"; alias "${ALS}"'=cd '"${DIR}"; done }
     #### aliases
@@ -65,7 +65,7 @@ _src(){
         # __git_complete gf _git_fetch
         # __git_complete gp _git_pull
         __git_complete grb _git_rebase
-        __git_complete gcp _git_cherry-pick
+        __git_complete gcp _git_cherry_pick
         __git_complete gl _git_log
         __git_complete lg _git_log
         __git_complete log _git_log
@@ -78,14 +78,17 @@ _src(){
     alias dsk="cd ${HOME}/Desktop"
     alias doc="cd ${HOME}/Documents"
     alias gwsa="cd ${GWSA} && gg"
+    ## profile interactions
+    alias rc="${editor} ${path_bashrc}"
+    alias rca="${editor} ${path_bash_aliases}"
+    alias rcg="${editor} ${path_bash_gene_src}"
+    alias rcs=". ${path_bashrc}"
+    alias rcas=". ${path_bash_aliases}"
+    alias rcgs=". ${path_bash_gene_src}"
+    [ "${os}" == 'windows' ] && alias psp="${editor} ${path_ps_profile}"
+    [ "${os}" == 'windows' ] && alias pspg="${editor} ${path_ps_gene_src}"
     ## misc
     alias op="${open}"
-    alias rc="${editor} ${HOME}/.bashrc"
-    alias rca="${editor} ${HOME}/.bash_aliases"
-    alias rcg="${editor} ${path_this}"
-    alias rcs="source ${HOME}/.bashrc"
-    alias rcas="source ${HOME}/.bash_aliases"
-    alias rcgs="source ${path_this}"
     [ "${os}" == 'windows' ] || alias sudo='sudo ' # purpose is to allow 'sudo <alias>'
     [ "${os}" == 'windows' ] && alias rs='clear' || rs="clear printf '\e[3j'"
 }

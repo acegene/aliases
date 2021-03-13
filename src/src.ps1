@@ -16,11 +16,11 @@ function _src {
     $dir_this = $PSScriptRoot # not compatible with PS version < 3.0
     $dir_repo = "$(pushd $(git -C $($dir_this) rev-parse --show-toplevel); echo $PWD; popd)"
     $dir_bin = "$($dir_repo)\bin"
+    #### includes
+    . "$($dir_this)\cfg.ps1"
     #### exports
     $global:GWSA = $dir_repo
     $env:PATH += ";$($dir_bin)"
-    #### includes
-    . "$($dir_this)\cfg.ps1"
     #### git-number check if can be enabled
     $git_number = "$($dir_bin)\git-number"
     $use_git_number = $false; if ($(Test-Path $git_number) -And $(Test-Path $perl)){$use_git_number = $true}
@@ -61,15 +61,24 @@ function _src {
     function global:doc {cd "$($HOME)/Documents"}
     function global:gwsa {cd $global:GWSA; gg}
     function global:gwsv {cd $global:GWSA; gg}
+    ## profile interactions
+    Invoke-Expression "function global:psp {& '$editor' '$path_ps_profile'}"
+    Invoke-Expression "function global:psps {. '$path_ps_profile'}"
+    Invoke-Expression "function global:pspg {& '$editor' '$path_this'}"
+    Invoke-Expression "function global:pspgs {. '$path_this'}"
+    Invoke-Expression "function global:rc {& '$editor' '$path_bashrc'}"
+    Invoke-Expression "function global:rca {& '$editor' '$path_bash_aliases'}"
+    Invoke-Expression "function global:rcg {& '$editor' '$path_bash_gene_src'}"
+    ## shell interactions
+    function global:Launch-PS-Admin { Start-Process -Verb RunAs (Get-Process -Id $PID).Path}
+    Set-Alias -Scope 'global' -name 'ps-admin' -Value 'Launch-PS-Admin'
+    function global:Launch-WT-Admin { powershell "Start-Process -Verb RunAs cmd.exe '/c start wt.exe'"}
+    Set-Alias -Scope 'global' -name 'wt-admin' -Value 'Launch-WT-Admin'
+    Invoke-Expression "function global:bashed {if(`$args.count -eq 0){& '$bash' -i}else{`$x = `$args | % {`$_ -replace '`"', '\`"'}; & '$bash' -ic `"`$x`"}}"
     ## misc
     Set-Alias -Scope 'global' -Name 'op' -Value 'start'
-    Invoke-Expression "function global:rc {& '$editor' '$profile_path'}"
-    Invoke-Expression "function global:rcg {& '$editor' '$path_this'}"
-    Invoke-Expression "function global:rcs {. '$profile_path'}"
-    Invoke-Expression "function global:rcgs {. '$path_this'}"
     Set-Alias -Scope 'global' -Name 'rs' -Value 'clear'
-    Invoke-Expression "function global:rc {& '$editor' '$profile_path'}"
-    Invoke-Expression "function global:bashed {if(`$args.count -eq 0){& '$bash' -i}else{`$x = `$args | % {`$_ -replace '`"', '\`"'}; & '$bash' -ic `"`$x`"}}"
+    
 }
 
 _src @args

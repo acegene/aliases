@@ -71,14 +71,15 @@ function _src {
     Invoke-Expression "function global:rcg {& '$editor' '$path_bash_gene_src'}"
     ## shell interactions
     function global:Launch-PS-Admin { Start-Process -Verb RunAs (Get-Process -Id $PID).Path}
-    Set-Alias -Scope 'global' -name 'ps-admin' -Value 'Launch-PS-Admin'
+    Set-Alias -Scope 'global' -name 'admined-ps' -Value 'Launch-PS-Admin'
     function global:Launch-WT-Admin { powershell "Start-Process -Verb RunAs cmd.exe '/c start wt.exe'"}
-    Set-Alias -Scope 'global' -name 'wt-admin' -Value 'Launch-WT-Admin'
+    Set-Alias -Scope 'global' -name 'admined-wt' -Value 'Launch-WT-Admin'
+    Set-Alias -Scope 'global' -name 'admined' -Value 'Launch-WT-Admin'
     Invoke-Expression "function global:bashed {if(`$args.count -eq 0){& '$bash' -i}else{`$x = `$args | % {`$_ -replace '`"', '\`"'}; & '$bash' -ic `"`$x`"}}"
     ## misc
     Set-Alias -Scope 'global' -Name 'op' -Value 'start'
     Set-Alias -Scope 'global' -Name 'rs' -Value 'clear'
-    
+
 }
 
 _src @args

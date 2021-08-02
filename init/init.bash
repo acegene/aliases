@@ -7,7 +7,7 @@ set -u
 PATH_THIS="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -P)/"$(basename -- "${BASH_SOURCE[0]}")""
 DIR_THIS="$(dirname -- "${PATH_THIS}")"
 BASE_THIS="$(basename -- "${PATH_THIS}")"
-[ -f "${PATH_THIS}" ] && [ -d "${DIR_THIS}" ] && [ -f "${DIR_THIS}/${BASE_THIS}" ] || ! >&2 echo "ERROR: could not generate paths" || exit 1
+[ -f "${PATH_THIS}" ] && [ -d "${DIR_THIS}" ] && [ -f "${DIR_THIS}/${BASE_THIS}" ] || ! >&2 echo "ERROR: ${BASE_THIS}: could not generate paths" || exit 1
 
 __parse_args(){
     while (( "${#}" )); do
@@ -28,7 +28,7 @@ __parse_args(){
 ################&&!%@@%!&&################ AUTO GENERATED CODE BELOW THIS LINE ################&&!%@@%!&&################
 # yymmdd: 210228
 # generation cmd on the following line:
-# python "${GWSPY}/write-btw.py" "-t" "bash" "-w" "${GWSA}/init/init.bash" "-x" "__echo" "__check_if_objs_exist" "__append_line_to_file_if_not_found"
+# python "${GWSPY}/write_btw.py" "-t" "bash" "-w" "${GWSA}/init/init.bash" "-x" "__echo" "__check_if_objs_exist" "__append_line_to_file_if_not_found"
 
 __echo(){
     #### echo that can watch the silent and verbose variables from the scope it was called from

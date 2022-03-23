@@ -7,6 +7,14 @@
 export GWSA='TEMPLATE_DIR_REPO'
 export PATH="${PATH}:${GWSA}/bin"
 
+#### misc funcs
+witch() {
+    local objects=() && IFS=$'\n' read -d '' -r -a objects <<<"$(which "${@}")"
+    [ "${objects[*]}" != '' ] || return 1
+    "${EDITOR:-TEMPLATE_OS_START}" "${objects[@]}"
+}
+# shellcheck disable=SC2164
+witchd() { cd "$(dirname -- "$(which "${@}")")"; }
 #### git aliases
 if command -v git-number >/dev/null 2>&1; then
     alias gg='git -c color.status=always status -sb | head -n 1 && git-number -s'
@@ -74,5 +82,11 @@ alias rcgs=". 'TEMPLATE_SRC'"
 alias psp='"${EDITOR:-TEMPLATE_OS_START}" "${HOME}/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"'
 alias pspg='"${EDITOR:-TEMPLATE_OS_START}" "${GWSA}/src/src.ps1"'
 #### misc aliases
+alias ch='chmod 755'
+alias date-x="date +'%y%m%d'"
+alias date-xx="date +'%y%m%d-%H'"
+alias date-xxx="date +'%y%m%d-%H%M'"
+alias date-xxxx="date +'%y%m%d-%H%M%S'"
+alias date-xxxxx="date +'%y%m%d-%H%M%S-%N'"
 alias op='TEMPLATE_OS_START'
 alias rs="clear && printf '\e[3j'"

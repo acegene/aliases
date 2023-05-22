@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 #
-# owner: acegene
-#
-# descr: adds sourcing of this repo's src.bash in ~/.bash_aliases
+# Adds sourcing of this repo's src.bash in ~/.bash_aliases
 
 # shellcheck disable=SC1091
 
@@ -25,38 +23,38 @@ __parse_args() {
         case "${1}" in
         --operating-system | --os | -o)
             case "${2}" in
-            ubuntu1804 | ubuntu2004 | win10 | wsl-ubuntu1804 | wsl-ubuntu2004)
+            mint | ubuntu | win | wsl-ubuntu)
                 os="${2}"
                 shift
                 ;;
-            *) __log -e "unrecognized '${1}' parameter '${2}'; choose from [ubuntu1804, ubuntu2004, win10, wsl-ubuntu1804, wsl-ubuntu2004]" && return 1 ;;
+            *) __log -e "unrecognized '${1}' parameter '${2}'; choose from [mint, ubuntu, win, wsl-ubuntu]" && return 1 ;;
             esac
             ;;
         *) __log -e "arg ${1} is unexpected" && return 2 ;;
         esac
         shift
     done
-    [ "${os}" != '' ] || ! __log -e "--os is required; choose from [ubuntu1804, ubuntu2004, win10, wsl-ubuntu1804, wsl-ubuntu2004]" || return 3
+    [ "${os}" != '' ] || ! __log -e "--os is required; choose from [mint, ubuntu, win, wsl-ubuntu]" || return 3
 }
 
 __generate_src() {
     local dir_repo="${1}"
     local path_src="${2}"
     local os="${3}"
-    local path_src_template="${dir_repo}/src/src.bash.template"
+    local path_src_template="${dir_repo}/.src/src.bash.template"
     #### create src file from template
     __exec_only_err cp "${path_src_template}" "${path_src}" || return 1
     #### overwrite placeholde template parameters
-    __exec_only_err sed -i "s|TEMPLATE_DIR_REPO|${dir_repo}|g" "${path_src}" || return 1
-    __exec_only_err sed -i "s|TEMPLATE_SRC|${path_src}|g" "${path_src}" || return 1
+    __exec_only_err sed -i "s|<TEMPLATE_DIR_REPO>|${dir_repo}|g" "${path_src}" || return 1
+    __exec_only_err sed -i "s|<TEMPLATE_SRC>|${path_src}|g" "${path_src}" || return 1
     case "${os}" in
-    ubuntu1804 | ubuntu2004 | wsl-ubuntu1804 | wsl-ubuntu2004)
-        __exec_only_err sed -i 's|TEMPLATE_OS_START|xdg-open|g' "${path_src}" || return 1
+    mint | ubuntu | wsl-ubuntu)
+        __exec_only_err sed -i 's|<TEMPLATE_OS_START>|xdg-open|g' "${path_src}" || return 1
         ;;
-    win10)
-        __exec_only_err sed -i 's|TEMPLATE_OS_START|start|g' "${path_src}" || return 1
+    win)
+        __exec_only_err sed -i 's|<TEMPLATE_OS_START>|start|g' "${path_src}" || return 1
         ;;
-    *) __log -e "unrecognized operating_system='${os}'; choose from [ubuntu1804, ubuntu2004, win10, wsl-ubuntu1804, wsl-ubuntu2004]" && return 1 ;;
+    *) __log -e "unrecognized operating_system='${os}'; choose from [mint, ubuntu, win, wsl-ubuntu]" && return 1 ;;
     esac
 }
 
@@ -73,7 +71,7 @@ __main() {
     __is_file "${bash_aliases}" || touch "${bash_aliases}" || ! __log -e "could not create '${bash_aliases}'" || return 1
     __is_file "${bashrc}" || __print_out_nl ". '${bash_aliases}'" >>"${bashrc}" || ! __log -e "could not write to '${bashrc}'" || return 1
     #### generate src file based on parameters
-    local path_src="${dir_repo}/src/src-${os}.bash"
+    local path_src="${dir_repo}/.src/src.bash"
     __generate_src "${dir_repo}" "${path_src}" "${os}" || ! __log -e "could not generate src" || return 1
     #### lines to add to files
     local lines_bash_aliases=("[ -f '${path_src}' ] && . '${path_src}'")

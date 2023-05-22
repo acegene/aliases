@@ -1,8 +1,8 @@
 # init.ps1
 #
-# descr: generate a powershell profile with aliases configs etc
+# Generate a powershell profile with aliases configs etc
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "EXEC: cd '$PWD'; & '$PSCommandPath' $args # as admin powershell"
@@ -18,7 +18,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 function Group-Unspecified-Args {
     [CmdletBinding()]
     param(
-        [Parameter(ValueFromRemainingArguments=$true)]
+        [Parameter(ValueFromRemainingArguments = $true)]
         $ExtraParameters
     )
 
@@ -26,7 +26,7 @@ function Group-Unspecified-Args {
     $UnnamedParams = @()
     $CurrentParamName = $null
     $ExtraParameters | ForEach-Object -Process {
-        if ($_ -match "^-") {
+        if ($_ -match '^-') {
             # Parameter names start with '-'
             if ($CurrentParamName) {
                 # Have a param name w/o a value; assume it's a switch
@@ -34,15 +34,13 @@ function Group-Unspecified-Args {
                 $ParamHashTable.$CurrentParamName = $true
             }
 
-            $CurrentParamName = $_ -replace "^-|:$"
-        }
-        else {
+            $CurrentParamName = $_ -replace '^-|:$'
+        } else {
             # Parameter value
             if ($CurrentParamName) {
                 $ParamHashTable.$CurrentParamName += $_
                 $CurrentParamName = $null
-            }
-            else {
+            } else {
                 $UnnamedParams += $_
             }
         }
@@ -52,47 +50,51 @@ function Group-Unspecified-Args {
         }
     }
 
-    return $ParamHashTable,$UnnamedParams
+    return $ParamHashTable, $UnnamedParams
 }
 ################&&!%@@%!&&################ AUTO GENERATED CODE ABOVE THIS LINE ################&&!%@@%!&&################
 
 function _init {
     param (
-        [Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)]
+        [Parameter(Mandatory = $false, ValueFromRemainingArguments = $true)]
         $unspecified_args
     )
     #### collect cmd args
-    $named_args,$unnamed_args = Group-Unspecified-Args @unspecified_args
+    $named_args, $unnamed_args = Group-Unspecified-Args @unspecified_args
     #### hardcoded values
-    $path_this = $PSCommandPath # not compatible with PS version < 3.0
     $dir_this = $PSScriptRoot # not compatible with PS version < 3.0
-    $dir_repo = "$(pushd $(git -C $($dir_this) rev-parse --show-toplevel); echo $PWD; popd)"
-    $dir_bin = "$($dir_repo)\bin"
-    $path_src = "$($dir_repo)\src\src.ps1"
+    $dir_repo = "$(Push-Location $(git -C $($dir_this) rev-parse --show-toplevel); Write-Output $PWD; Pop-Location)"
+    $path_src = "$($dir_repo)\.src\src.ps1"
+    $path_cfg = "$($dir_repo)\.src\cfg.ps1"
+    $path_cfg_default = "$($dir_repo)\.src\cfg-default.ps1"
     #### includes
-    . "$($dir_repo)\src\cfg.ps1"
+    if (!(Test-Path $path_cfg)) {
+        Write-Output "INFO: cp '$path_cfg_default' '$($path_cfg)'"
+        Copy-Item -Path "$path_cfg_default" -Destination "$path_cfg"
+    }
+    . "$path_cfg"
     #### if no profile exists create one
-    if (!(Test-Path $path_ps_profile)){New-Item -Type File -Force $path_ps_profile}
-    if (!(Test-Path $path_ps_profile_2)){New-Item -Type File -Force $path_ps_profile_2}
+    foreach ($profile in $profiles) {
+        if (!(Test-Path $profile)) {New-Item -Type File -Force $profile}
+    }
     #### lines to append
-    $cmd_args = "$($named_args.Keys | % { "-$($_)" + " '$($named_args.Item($_))'" }) "
-    $cmd_args += "$($unnamed_args | % { "'$($_)'" })"
-    if ($cmd_args -eq " ''"){$cmd_args = ""}
+    $cmd_args = "$($named_args.Keys | ForEach-Object { "-$($_)" + " '$($named_args.Item($_))'" }) "
+    $cmd_args += "$($unnamed_args | ForEach-Object { "'$($_)'" })"
+    if ($cmd_args -eq " ''") {$cmd_args = ''}
     $prof_cmd = ". '$($path_src)' $($cmd_args)"
-    #### check if lines exist in file, otherwise append them
-    if ($(((Get-Content -Raw $path_ps_profile) -split '\n')[-1]) -ne ''){
-        $prof_cmd = "`r`n$($prof_cmd)"
-    }
-    $file_str = Get-Content $path_ps_profile | Select-String -SimpleMatch $prof_cmd
-    if ($file_str -eq $null){
-        echo $prof_cmd >> $path_ps_profile
-    }
-    if ($(((Get-Content -Raw $path_ps_profile_2) -split '\n')[-1]) -ne ''){
-        $prof_cmd = "`r`n$($prof_cmd)"
-    }
-    $file_str = Get-Content $path_ps_profile_2 | Select-String -SimpleMatch $prof_cmd
-    if ($file_str -eq $null){
-        echo $prof_cmd >> $path_ps_profile_2
+    #### append lines to profiles
+    foreach ($profile in $profiles) {
+        #### if no profile exists create one
+        if (!(Test-Path $profile)) {New-Item -Type File -Force $profile}
+        #### check if lines exist in profile, otherwise append them
+        if ($(((Get-Content -Raw $profile) -split '\n')[-1]) -ne '') {
+            $prof_cmd = "`r`n$($prof_cmd)" ## TODO: check to ensure using crlf
+        }
+        $file_str = Get-Content $profile | Select-String -SimpleMatch $prof_cmd
+        if ($null -eq $file_str) {
+            Write-Output $prof_cmd >> $profile
+            Write-Host "INFO: Writing string to file: $($prof_cmd) >> $($profile)"
+        }
     }
 }
 

@@ -84,3 +84,4 @@ alias date-xxx="date +'%y%m%d-%H%M'"
 alias date-xxxx="date +'%y%m%d-%H%M%S'"
 alias date-xxxxx="date +'%y%m%d-%H%M%S-%N'"
 alias op='<TEMPLATE_OS_START>'
+alias rs='clear'

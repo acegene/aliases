@@ -69,7 +69,7 @@ function _init {
     $path_cfg_default = "$($dir_repo)\.src\cfg-default.ps1"
     #### includes
     if (!(Test-Path $path_cfg)) {
-        Write-Output "INFO: cp '$path_cfg_default' '$($path_cfg)'"
+        Write-Host "INFO: cp '$path_cfg_default' '$($path_cfg)'"
         Copy-Item -Path "$path_cfg_default" -Destination "$path_cfg"
     }
     . "$path_cfg"

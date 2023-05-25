@@ -7,29 +7,27 @@
 #   * rm invoke cmds
 #   * check ps version
 
-$ErrorActionPreference = 'Stop'
-
-function _src {
+function __Set-Vars-GWSA {
     #### hardcoded values
-    $path_this = $PSCommandPath # not compatible with PS version < 3.0
-    $dir_this = $PSScriptRoot # not compatible with PS version < 3.0
-    $dir_repo = "$(Push-Location $(git -C $($dir_this) rev-parse --show-toplevel); Write-Output $PWD; Pop-Location)"
-    $dir_bin = "$($dir_repo)\bin"
-    $path_cfg = "$($dir_repo)\.src\cfg.ps1"
-    $path_cfg_default = "$($dir_repo)\.src\cfg-default.ps1"
+    $private:path_this = $PSCommandPath # not compatible with PS version < 3.0
+    $private:dir_this = $PSScriptRoot # not compatible with PS version < 3.0
+    $private:dir_repo = "$(Push-Location $(git -C $($dir_this) rev-parse --show-toplevel); Write-Output $PWD; Pop-Location)"
+    $private:dir_bin = "$($dir_repo)\bin"
+    $private:path_cfg = "$($dir_repo)\.src\cfg.ps1"
+    $private:path_cfg_default = "$($dir_repo)\.src\cfg-default.ps1"
     #### includes
     if (!(Test-Path $path_cfg)) {
-        Write-Output "INFO: cp '$path_cfg_default' '$($path_cfg)'"
+        Write-Host "INFO: cp '$path_cfg_default' '$($path_cfg)'"
         Copy-Item -Path "$path_cfg_default" -Destination "$path_cfg"
     }
     . "$path_cfg"
     #### exports
     $env:PATH += ";$($dir_bin)" # TODO: redundant with gws
     #### git-number check if can be enabled
-    $git_number = "$($dir_bin)\git-number"
-    $use_git_number = $false; if ($(Test-Path $git_number) -And $(Test-Path $perl)) {$use_git_number = $true}
+    $private:git_number = "$($dir_bin)\git-number"
+    $private:use_git_number = $false; if ($(Test-Path $git_number) -And $(Test-Path $perl)) {$use_git_number = $true}
     if ($use_git_number) {$gitcmd = $perl; $gitargs = @("'$($dir_bin)\git-number'")}
-    else {Write-Output 'Warning: git-number and/or perl not found, defaulting to git'; $gitcmd = 'git'; $gitargs = @('-c', 'color.status=always')}
+    else {Write-Host 'Warning: git-number and/or perl not found, defaulting to git'; $gitcmd = 'git'; $gitargs = @('-c', 'color.status=always')}
     #### funcs
     Invoke-Expression "function global:_git_or_gn {& '$($gitcmd)' $($gitargs -join ' ') @args}"
     function _cd_parent_aliases {
@@ -82,4 +80,4 @@ function _src {
     Set-Alias -Scope 'global' -Name 'rs' -Value 'clear'
 }
 
-_src @args
+__Set-Vars-GWSA @args

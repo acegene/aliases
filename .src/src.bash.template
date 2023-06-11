@@ -33,7 +33,9 @@ alias gcp='git cherry-pick'
 alias lg="git log --date=format:'%d-%m-%Y %H:%M' --pretty=format:'%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s'"
 alias log="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n          %C(white)%s%C(reset)%n          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'"
 alias ggg='git submodule foreach git status -sb'
+alias gggr='git submodule foreach --recursive git status -sb'
 alias gsf='git submodule foreach'
+alias gsfr='git submodule foreach --recursive'
 alias gss='git submodule status'
 alias gsu='git submodule update'
 #### git tab completion

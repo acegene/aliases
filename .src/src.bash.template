@@ -12,6 +12,25 @@ witch() {
 }
 # shellcheck disable=SC2164
 witchd() { cd "$(dirname -- "$(which "${@}")")"; }
+manual_gsf() {
+    local num_submodules="${1}"
+    shift
+    local submodules=()
+    for _ in $(seq "${num_submodules}"); do
+        submodules+=("${1}")
+        shift
+    done
+    # TODO:
+    # * assert size is one for eval
+    # * consider making variables available as they are in gsf
+    local orig_dir="${PWD}"
+    for sm in "${submodules[@]}"; do
+        echo >&2 "INFO: EXEC: cd '${sm}'"
+        cd "${sm}" || { echo >&2 "ERROR: EXEC: cd '${sm}'" && return 1; }
+        eval "${1}" || { echo >&2 "ERROR: EXEC: eval \"${1}\"" && return 1; }
+    done
+    cd "${orig_dir}" || { echo >&2 "ERROR: EXEC: cd '${orig_dir}'" && return 1; }
+}
 #### git aliases
 if command -v git-number >/dev/null 2>&1; then
     alias gg='git -c color.status=always status -sb | head -n 1 && git-number -s'
@@ -33,9 +52,11 @@ alias gcp='git cherry-pick'
 alias lg="git log --date=format:'%d-%m-%Y %H:%M' --pretty=format:'%h%x20%x20%Cred%ad%x20%x20%Cblue%an%x20%x20%Creset%s'"
 alias log="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n          %C(white)%s%C(reset)%n          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'"
 alias ggg='git submodule foreach git status -sb'
-alias gggr='git submodule foreach --recursive git status -sb'
+alias gggg='git submodule foreach --recursive git status -sb'
 alias gsf='git submodule foreach'
 alias gsfr='git submodule foreach --recursive'
+alias gsf-gws='manual_gsf "${#GWS_SUBMODULES[@]}" "${GWS_SUBMODULES[@]}"'
+alias gws-gsf='manual_gsf "${#GWS_SUBMODULES[@]}" "${GWS_SUBMODULES[@]}"'
 alias gss='git submodule status'
 alias gsu='git submodule update'
 #### git tab completion

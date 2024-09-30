@@ -16,6 +16,7 @@ log_context="${base_this}" # implicitly used by __log func
 
 dir_repo="$(git -C "${dir_this}" rev-parse --show-toplevel | sed 's/^\([a-zA-Z]\):/\/\1/')" || ! printf '%s\n' "ERROR: ${log_context}: could not locate git repo dir for ${base_this}" || exit 1
 
+# shellcheck disable=SC1090
 for file in "${dir_repo}/../scripts/shell/sh/utils/"*.sh; do . "${file}" || exit "${?}"; done || exit "${?}"
 
 __parse_args() {

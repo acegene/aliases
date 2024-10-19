@@ -78,16 +78,8 @@ else
     echo >&2 'WARNING: generation of tab completion for git aliases failed'
 fi
 #### dir aliases
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-alias ......='cd ../../../../..'
-alias .......='cd ../../../../../..'
-alias ........='cd ../../../../../../..'
-alias .........='cd ../../../../../../../..'
-alias ..........='cd ../../../../../../../../..'
-alias ...........='cd ../../../../../../../../../..'
+# shellcheck disable=SC2139
+for i in {2..10}; do alias "$(printf '.%.0s' $(seq 1 "$i"))"="cd $(printf '../%.0s' $(seq 1 "$((i - 1))"))"; done
 alias dl='cd "${HOME}/Downloads"'
 alias dsk='cd "${HOME}/Desktop"'
 alias doc='cd "${HOME}/Documents"'

@@ -5,7 +5,9 @@ import os
 import sys
 from collections.abc import Sequence
 
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "repos", "scripts", "py"))
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "scripts", "py"),
+)
 
 from utils import argparse_utils
 from utils import cli_utils
@@ -105,14 +107,14 @@ def main(argparse_args: Sequence[str] | None = None):
 
     logger.info("Checking bashrc and .bash_aliases status")
     if init_bash(dir_repo, check_only=True) or cli_utils.prompt(
-        "PROMPT: Initialize .bashrc and .bash_aliases for gene-ws? (y/n) ",
+        "PROMPT: Initialize .bashrc and .bash_aliases for aliases? (y/n) ",
     ):
         init_bash(dir_repo)
 
     if python_utils.is_os_windows():
         logger.info("Checking powershell profile status")
         if init_powershell(dir_repo, check_only=True) or cli_utils.prompt(
-            "PROMPT: Initialize powershell profiles for gene-ws? (y/n) ",
+            "PROMPT: Initialize powershell profiles for aliases? (y/n) ",
         ):
             init_powershell(dir_repo, check_only=True)
 
